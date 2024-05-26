@@ -11,8 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DbDataAcess\Db.DataAccess.csproj" />
-	  <ProjectReference Include="..\Patient.DomainModels\Patient.DomainModels.csproj" />
+		<ProjectReference Include="..\src\Patient.DomainModels\Patient.DomainModels.csproj" />
 	</ItemGroup>
 
 </Project>

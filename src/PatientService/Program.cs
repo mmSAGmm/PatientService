@@ -1,21 +1,27 @@
 using DbDataAccess;
+using FluentValidation;
 using Patient.Domain;
 using PatientService.Automapper;
 using PatientService.Middleware;
+using PatientService.RequestModels;
+using PatientService.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddOptions();
 
 builder.Services.AddControllers();
-builder.Services.AddDomain();
-builder.Services.AddDbs();
-builder.Services.AddAutoMapper(x => x.AddProfile(typeof(ServiceProfile)));
+builder.Services
+    .AddDomain()
+    .AddDbs(builder.Configuration)
+    .AddAutoMapper(x => x.AddProfile(typeof(ServiceProfile)))
+    .AddScoped<IValidator<CreatePatientRequestModel>, CreatePatientModelValidation>()
+    .AddScoped<IValidator<UpdatePatientRequestModel>, UpdatePatientModelValidation>();
 
 var app = builder.Build();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();

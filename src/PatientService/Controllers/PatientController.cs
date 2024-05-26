@@ -22,7 +22,7 @@ namespace PatientService.Controllers
         [HttpGet("search/{pattern:string}")]
         public async Task<IActionResult> Query(string pattern)
         {
-
+            return null;
         }
 
         [HttpGet("/{id:guid}")]

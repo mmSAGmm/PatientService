@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>PatientService</RootNamespace>
@@ -9,13 +9,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\DbDataAcess\DbDataAccess.csproj" />
-	  <ProjectReference Include="..\..\Patient.Domain\Patient.Domain.csproj" />
+	  <ProjectReference Include="..\DbDataAcess\Db.DataAccess.csproj" />
+	  <ProjectReference Include="..\Patient.Domain\Patient.Domain.csproj" />
 	</ItemGroup>
-
 </Project>
