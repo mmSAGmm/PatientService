@@ -9,8 +9,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      ASPNETCORE_URLS: http://localhost:8080
-      MySql__CONNECTIONSTRING: "server=db;uid=root;pwd=example;database=test"
+      ASPNETCORE_URLS: http://+:8080
+      MySql__CONNECTIONSTRING: "Server=db;Port=3306;Database=test;Uid=root;Pwd=example;"
   db:
     ports:
         - "3306:3306"

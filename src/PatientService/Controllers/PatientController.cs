@@ -19,15 +19,17 @@ namespace PatientService.Controllers
             _patientBossService = patientBossService;
         }
 
-        [HttpGet("search/{pattern:string}")]
+        //todo: add swagger description
+        [HttpGet("search/{pattern}")]
         public async Task<IActionResult> Query(string pattern)
         {
             return null;
         }
 
-        [HttpGet("/{id:guid}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(GetPatientResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        //TODO: cancellation token
         public async Task<IActionResult> GetPatient(Guid id)
         {
             var model = await _patientBossService.Get(id);
@@ -57,7 +59,7 @@ namespace PatientService.Controllers
             return Ok();
         }
 
-        [HttpDelete("/{id:guid}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdatePatient(Guid id)
         {

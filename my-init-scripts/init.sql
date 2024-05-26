@@ -4,7 +4,7 @@ use test;
 
 CREATE TABLE tbPatients 
 (
-	id int, 
+	id varchar(36), 
 	json text, 
 	birthDate datetime
 );

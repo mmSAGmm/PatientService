@@ -1,5 +1,6 @@
 using DbDataAccess;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Patient.Domain;
 using PatientService.Automapper;
 using PatientService.Middleware;
@@ -12,11 +13,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOptions();
 
-builder.Services.AddControllers();
+
+builder.Services
+    .AddControllers(c=> c.Filters.Add(new ValidationFilterAttribute()));
 builder.Services
     .AddDomain()
     .AddDbs(builder.Configuration)
     .AddAutoMapper(x => x.AddProfile(typeof(ServiceProfile)))
+    .AddFluentValidationAutoValidation()
     .AddScoped<IValidator<CreatePatientRequestModel>, CreatePatientModelValidation>()
     .AddScoped<IValidator<UpdatePatientRequestModel>, UpdatePatientModelValidation>();
 
