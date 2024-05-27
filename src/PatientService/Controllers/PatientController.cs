@@ -20,50 +20,52 @@ namespace PatientService.Controllers
         }
 
         //todo: add swagger description
-        [HttpGet("search/{pattern}")]
-        public async Task<IActionResult> Query(string pattern)
+        //todo: vliadte pattern
+        [HttpGet("search")]
+        public async Task<IActionResult> Query(string[] pattern, CancellationToken token)
         {
-            return null;
+            var result = await _patientBossService.Search(pattern, token);
+
+            return Ok(result.Select(x => _mapper.Map<GetPatientResponseModel>(x)));
         }
 
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(GetPatientResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        //TODO: cancellation token
-        public async Task<IActionResult> GetPatient(Guid id)
+        public async Task<IActionResult> GetPatient(Guid id, CancellationToken token)
         {
-            var model = await _patientBossService.Get(id);
+            var model = await _patientBossService.Get(id, token);
             return model != null ? Ok(_mapper.Map<GetPatientResponseModel>(model)) : NoContent();
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(GetPatientResponseModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreatePatient([FromBody] CreatePatientRequestModel requestModel)
+        public async Task<IActionResult> CreatePatient([FromBody] CreatePatientRequestModel requestModel, CancellationToken token)
         {
             var patient = _mapper.Map<Patient.DomainModels.Patient>(requestModel);
-            await _patientBossService.Add(patient);
+            await _patientBossService.Add(patient, token);
 
             var model = _mapper.Map<GetPatientResponseModel>(patient);
             return Created(patient.Id.ToString(), model);
         }
 
-        //TODO: validation
+        //TODO: api description
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdatePatient([FromBody] UpdatePatientRequestModel requestModel)
+        public async Task<IActionResult> UpdatePatient([FromBody] UpdatePatientRequestModel requestModel, CancellationToken token)
         {
             var patient = _mapper.Map<Patient.DomainModels.Patient>(requestModel);
-            await _patientBossService.Update(patient);
+            await _patientBossService.Update(patient, token);
             return Ok();
         }
 
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdatePatient(Guid id)
+        public async Task<IActionResult> UpdatePatient(Guid id, CancellationToken token)
         {
-            await _patientBossService.Delete(id);
+            await _patientBossService.Delete(id, token);
             return Ok();
         }
     }
