@@ -16,8 +16,7 @@ string BuildJson()
 
 var chunks = Enumerable.Range(0, 100).Chunk(10);
 var client = new HttpClient();
-//TODO: to config
-string url = "http://localhost:8080";
+string url = args.Any() ? args[0] : "http://localhost:8080/api/v1/patient";
 
 foreach (var chunk in chunks)
 {
@@ -26,7 +25,7 @@ foreach (var chunk in chunks)
         .Select(x => client.PostAsync(url, x));
     try
     {
-        await Task.WhenAll(tasks);
+        var results = await Task.WhenAll(tasks);
     }
     catch (Exception ex)
     {
@@ -35,5 +34,5 @@ foreach (var chunk in chunks)
 }
 
 Console.WriteLine("Done!!!");
-
+Console.ReadLine();
 

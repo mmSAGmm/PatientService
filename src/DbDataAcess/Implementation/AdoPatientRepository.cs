@@ -9,7 +9,7 @@ namespace DbDataAccess.Implementation
 {
     public class AdoPatientRepository : IPatientRepository
     {
-        private const string dbFormat = "yyyy-MM-dd hh:mm:ss";
+        private const string dbFormat = "yyyy-MM-dd HH:mm:ss";
 
         private const string dateFormat = "yyyy-MM-dd";
 
