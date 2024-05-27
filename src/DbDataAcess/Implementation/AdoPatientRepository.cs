@@ -157,6 +157,7 @@ namespace DbDataAccess.Implementation
             while(await dbResult.ReadAsync(token))
             {
                 var json = dbResult.GetString(1);
+                //TOOD: to serializers intreface
                 var target = JsonSerializer.Deserialize<Patient.DomainModels.Patient>(json);
                 rs.Add(target);
             }
