@@ -40,7 +40,7 @@ namespace PatientService.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(GetPatientResponseModel), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> CreatePatient([FromBody] CreatePatientRequestModel requestModel, CancellationToken token)
         {
             var patient = _mapper.Map<Patient.DomainModels.Patient>(requestModel);
@@ -53,7 +53,7 @@ namespace PatientService.Controllers
         //TODO: api description
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> UpdatePatient([FromBody] UpdatePatientRequestModel requestModel, CancellationToken token)
         {
             var patient = _mapper.Map<Patient.DomainModels.Patient>(requestModel);
