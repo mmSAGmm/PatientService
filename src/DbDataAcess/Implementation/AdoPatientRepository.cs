@@ -60,7 +60,7 @@ namespace DbDataAccess.Implementation
 
             AddParameter(cmd, "id", Id);
 
-            var dbResult = await cmd.ExecuteReaderAsync(token);
+            using var dbResult = await cmd.ExecuteReaderAsync(token);
             if (await dbResult.ReadAsync(token))
             {
                 var json = dbResult.GetString(1);
@@ -152,7 +152,7 @@ namespace DbDataAccess.Implementation
 
             cmd.CommandText = $"SELECT id, json, birthDate FROM tbPatients WHERE {string.Join(" AND ", queries)}";
 
-            var dbResult = await cmd.ExecuteReaderAsync(token);
+            using var dbResult = await cmd.ExecuteReaderAsync(token)
             var rs = new List<Patient.DomainModels.Patient>();
             while(await dbResult.ReadAsync(token))
             {
