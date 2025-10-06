@@ -9,7 +9,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOptions();
 
-
 builder.Services
     .AddControllers(c=> c.Filters.Add(new ValidationFilterAttribute()));
 
