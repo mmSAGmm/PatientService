@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>PatientService</RootNamespace>
@@ -17,5 +17,13 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\DbDataAcess\Db.DataAccess.csproj" />
 	  <ProjectReference Include="..\Patient.Domain\Patient.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EditorConfigFiles Remove="C:\Reveal\test_agsr\src\PatientService\.editorconfig" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="C:\Reveal\test_agsr\src\PatientService\.editorconfig" />
 	</ItemGroup>
 </Project>
