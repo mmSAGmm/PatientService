@@ -1,22 +1,27 @@
-﻿using DbDataAccess.Abstractions;
+﻿using AutoFixture.Xunit3;
+using DbDataAccess.Abstractions;
 
 namespace Patient.Domain.Tests.Implementation.PatientBossServices
 {
     public class WhenGetPatient : BasePatientBossServiceFixture
     {
-        private DomainModels.Patient model;
-
         public WhenGetPatient()
         {
-            model = new DomainModels.Patient();
-            Subject.Get(model.Id, CancellationToken.None);
+
         }
 
-        [Fact]
-        public void ShouldCallRepo() 
+        [Theory, AutoData]
+        public void ShouldCallRepo(DomainModels.Patient patient)
         {
+            Invoke(patient);
             mocker.GetMock<IPatientRepository>()
-                .Verify(x => x.Get(model.Id, CancellationToken.None));
+                .Verify(x => x.Get(patient.Id, CancellationToken.None));
+        }
+
+
+        private void Invoke(DomainModels.Patient model)
+        {
+            Subject.Get(model.Id, CancellationToken.None);
         }
     }
 }
