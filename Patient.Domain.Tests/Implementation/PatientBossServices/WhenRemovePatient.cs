@@ -5,12 +5,6 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
 {
     public class WhenRemovePatient : BasePatientBossServiceFixture
     {
-
-        public WhenRemovePatient() 
-        {
-           
-        }
-
         private void Invoke(Guid id) => Subject.Delete(id, CancellationToken.None);
 
         [Theory, AutoData]
