@@ -1,22 +1,24 @@
-﻿using DbDataAccess.Abstractions;
+﻿using AutoFixture.Xunit3;
+using DbDataAccess.Abstractions;
 
 namespace Patient.Domain.Tests.Implementation.PatientBossServices
 {
     public class WhenRemovePatient : BasePatientBossServiceFixture
     {
-        private DomainModels.Patient model;
 
         public WhenRemovePatient() 
         {
-            model = new DomainModels.Patient();
-            Subject.Delete(model.Id, CancellationToken.None);
+           
         }
 
-        [Fact]
-        public void ShouldCallRepo() 
+        private void Invoke(Guid id) => Subject.Delete(id, CancellationToken.None);
+
+        [Theory, AutoData]
+        public void ShouldCallRepo(Guid id) 
         {
+            Invoke(id);
             mocker.GetMock<IPatientRepository>()
-                .Verify(x => x.Delete(model.Id, CancellationToken.None));
+                .Verify(x => x.Delete(id, CancellationToken.None));
         }
     }
 }
