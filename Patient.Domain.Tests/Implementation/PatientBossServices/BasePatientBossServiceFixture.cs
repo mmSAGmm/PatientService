@@ -13,7 +13,5 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
         {
             Subject = mocker.CreateInstance<PatientBossService>();
         }
-
-
     }
 }
