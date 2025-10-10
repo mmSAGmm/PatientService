@@ -63,7 +63,7 @@ namespace PatientService.Controllers
 
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdatePatient(Guid id, CancellationToken token)
+        public async Task<IActionResult> DeletePatient(Guid id, CancellationToken token)
         {
             await _patientBossService.Delete(id, token);
             return Ok();
