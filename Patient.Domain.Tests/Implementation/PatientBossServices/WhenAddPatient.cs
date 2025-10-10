@@ -13,7 +13,7 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
         }
 
         [Fact]
-        public void ShouldCallRepo() 
+        public void ShouldCallRepo()
         {
             mocker.GetMock<IPatientRepository>()
                 .Verify(x => x.Add(model, CancellationToken.None));
