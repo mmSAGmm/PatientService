@@ -18,6 +18,7 @@ builder.Services.AddOpenTelemetry()
            .AddAspNetCoreInstrumentation()
            .AddHttpClientInstrumentation()
            //.AddConsoleExporter()
+
            
            )
         .WithMetrics(builder => builder
