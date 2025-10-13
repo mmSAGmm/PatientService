@@ -49,14 +49,14 @@ namespace Db.DataAccess.Implementation
         public async Task<Patient.DomainModels.Patient> Get(Guid Id, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
-           
+
             var param = new Dictionary<string, object>()
             {
                 ["id"] = Id,
             };
 
             var dbResult = await connection.QueryFirstAsync($"SELECT id, json, birthDate FROM tbPatients WHERE Id = @id", param);
-            if (await dbResult.ReadAsync(token))
+            if (dbResult != null)
             {
                 var json = dbResult.json;
 
@@ -159,7 +159,7 @@ namespace Db.DataAccess.Implementation
         public async Task Update(Patient.DomainModels.Patient model, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
-          
+
             var param = new Dictionary<string, object>()
             {
                 ["id"] = model.Id,
