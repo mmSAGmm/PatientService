@@ -14,7 +14,7 @@ namespace DbDataAccess
         {
             services.Configure<MySqlOption>(configuration.GetSection("MySql"));
             services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
-            services.AddSingleton<IPatientRepository, DapperPatientRepository>();
+            services.AddSingleton<IPatientRepository, AdoPatientRepository>();
             return services;
         }
     }
