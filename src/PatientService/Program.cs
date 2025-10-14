@@ -33,7 +33,7 @@ builder.Services.AddOpenTelemetry()
             .AddPrometheusExporter())
         .WithLogging(builder => { });
 
-
+builder.Services.AddDbContext<Db.DataAccess.EF.DbContex>();
 
 builder.Services
     .AddControllers(c => c.Filters.Add(new ValidationFilterAttribute()));
