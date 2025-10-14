@@ -2,6 +2,7 @@
 using DbDataAccess.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
 using Patient.DomainModels.QueryParse;
 using System.Text.Json;
 
@@ -125,7 +126,17 @@ namespace Db.DataAccess.Implementation
                         .FromSqlRaw($"SELECT id, json, birthDate FROM tbPatients WHERE {string.Join(" AND ", queries)}", parameters.ToArray())
                         .ToListAsync();
 
-            return users;
+            var rs = new List<Patient.DomainModels.Patient>();
+
+            foreach (var dbResult in users)
+            {
+                var json = dbResult.Json;
+                //TOOD: to serializers intreface
+                var target = JsonSerializer.Deserialize<Patient.DomainModels.Patient>(json);
+                rs.Add(target);
+            }
+
+            return rs;
         }
 
         public async Task Update(Patient.DomainModels.Patient model, CancellationToken token)
