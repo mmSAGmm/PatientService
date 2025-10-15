@@ -2,7 +2,6 @@
 using DbDataAccess.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Common;
 using Patient.DomainModels.QueryParse;
 using System.Text.Json;
 

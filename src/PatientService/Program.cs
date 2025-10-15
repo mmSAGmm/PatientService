@@ -5,6 +5,8 @@ using Patient.Domain;
 using PatientService.HostedServices;
 using PatientService.Middleware;
 using PatientService.Validation;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Actuators.All;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOptions();
 builder.Services.AddHostedService<CrawlerService>();
+builder.Services.AddAllActuators();
 
 builder.Services.AddOpenTelemetry()
        .WithTracing(builder => builder
@@ -44,6 +47,8 @@ builder.Services
     .AddService();
 
 var app = builder.Build();
+app.UseRouting();
+app.UseActuatorEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSwagger();
@@ -51,5 +56,6 @@ app.UseSwaggerUI();
 
 app.MapControllers();
 app.MapPrometheusScrapingEndpoint();
+
 
 app.Run();
