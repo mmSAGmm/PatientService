@@ -16,6 +16,7 @@ namespace DbDataAccess
             services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
             services.AddSingleton<IPatientRepository, AdoPatientRepository>();
             //services.AddTransient<IPatientRepository, EfPatientRepository>();
+            //services.AddTransient<IPatientRepository, DapperPatientRepository>();
             return services;
         }
     }
