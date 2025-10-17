@@ -1,51 +1,54 @@
 using DbDataAccess.Abstractions;
 using Db.DataAccess.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
 using Patient.DomainModels.QueryParse;
 using System.Text.Json;
-using Db.DataAccess.EF.Models;
 
 namespace DbDataAccess.Implementation
 {
-	public class MongoPatientRepository : IPatientRepository
+    public class MongoPatientRepository : IPatientRepository
 	{
-		private readonly IMongoCollection<MongoPatientEntity> _collection;
+        private readonly IMongoCollection<BsonDocument> _collection;
 
         public MongoPatientRepository(IMongoClient mongoClient, IOptions<MongoOption> options)
 		{
             var opt = options.Value;
             var database = mongoClient.GetDatabase(opt.DatabaseName);
-            _collection = database.GetCollection<MongoPatientEntity>(opt.CollectionName);
+            _collection = database.GetCollection<BsonDocument>(opt.CollectionName);
 		}
 
-		public async Task AddAsync(Patient.DomainModels.Patient model, CancellationToken token)
+        public async Task AddAsync(Patient.DomainModels.Patient model, CancellationToken token)
 		{
-			var entity = new MongoPatientEntity
-			{
-				Id = model.Id.ToString(),
-				Json = JsonSerializer.Serialize(model),
-				BirthDate = model.BirthDate
-			};
-			await _collection.InsertOneAsync(entity, cancellationToken: token);
+            var doc = new BsonDocument
+            {
+                { "_id", model.Id.ToString() },
+                { "json", JsonSerializer.Serialize(model) },
+                { "birthDate", model.BirthDate }
+            };
+            await _collection.InsertOneAsync(doc, cancellationToken: token);
 		}
 
-		public async Task DeleteAsync(Guid Id, CancellationToken token)
+        public async Task DeleteAsync(Guid Id, CancellationToken token)
 		{
-			await _collection.DeleteOneAsync(x => x.Id == Id.ToString(), token);
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", Id.ToString());
+            await _collection.DeleteOneAsync(filter, token);
 		}
 
-		public async Task<Patient.DomainModels.Patient?> GetAsync(Guid Id, CancellationToken token)
+        public async Task<Patient.DomainModels.Patient?> GetAsync(Guid Id, CancellationToken token)
 		{
-			var entity = await _collection.Find(x => x.Id == Id.ToString()).FirstOrDefaultAsync(token);
-			if (entity == null) return null;
-			return JsonSerializer.Deserialize<Patient.DomainModels.Patient>(entity.Json);
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", Id.ToString());
+            var entity = await _collection.Find(filter).FirstOrDefaultAsync(token);
+            if (entity == null) return null;
+            var json = entity.GetValue("json", BsonNull.Value).AsString;
+            return JsonSerializer.Deserialize<Patient.DomainModels.Patient>(json);
 		}
 
-		public async Task<IEnumerable<Patient.DomainModels.Patient>> SearchAsync(IEnumerable<ParseResult> parseResults, CancellationToken token)
+        public async Task<IEnumerable<Patient.DomainModels.Patient>> SearchAsync(IEnumerable<ParseResult> parseResults, CancellationToken token)
 		{
-			var filterBuilder = Builders<MongoPatientEntity>.Filter;
-			FilterDefinition<MongoPatientEntity>? filter = null;
+            var filterBuilder = Builders<BsonDocument>.Filter;
+            FilterDefinition<BsonDocument>? filter = null;
 
 			foreach (var pR in parseResults)
 			{
@@ -61,7 +64,7 @@ namespace DbDataAccess.Implementation
 
 					var lower = DateTimeOffset.FromUnixTimeSeconds((long)(dtUnix * 0.9)).UtcDateTime;
 					var upper = DateTimeOffset.FromUnixTimeSeconds((long)(dtUnix * 1.1)).UtcDateTime;
-					var part = filterBuilder.Gt(x => x.BirthDate, lower) & filterBuilder.Lt(x => x.BirthDate, upper);
+                    var part = filterBuilder.Gt("birthDate", lower) & filterBuilder.Lt("birthDate", upper);
 					filter = filter == null ? part : filter & part;
 					continue;
 				}
@@ -69,13 +72,13 @@ namespace DbDataAccess.Implementation
 				if (pR.Date.HasValue && pR.Time.HasValue)
 				{
 					var dt = new DateTime(pR.Date.Value.Year, pR.Date.Value.Month, pR.Date.Value.Day, pR.Time.Value.Hour, pR.Time.Value.Minute, pR.Time.Value.Second);
-					FilterDefinition<MongoPatientEntity> part = pR.Prefix switch
+                    FilterDefinition<BsonDocument> part = pR.Prefix switch
 					{
-						Prefix.Equal => filterBuilder.Eq(x => x.BirthDate, dt),
-						Prefix.LessThan => filterBuilder.Lt(x => x.BirthDate, dt),
-						Prefix.GraterThan => filterBuilder.Gt(x => x.BirthDate, dt),
-						Prefix.GreaterOrEqual => filterBuilder.Gte(x => x.BirthDate, dt),
-						Prefix.LessOrEqual => filterBuilder.Lte(x => x.BirthDate, dt),
+                        Prefix.Equal => filterBuilder.Eq("birthDate", dt),
+                        Prefix.LessThan => filterBuilder.Lt("birthDate", dt),
+                        Prefix.GraterThan => filterBuilder.Gt("birthDate", dt),
+                        Prefix.GreaterOrEqual => filterBuilder.Gte("birthDate", dt),
+                        Prefix.LessOrEqual => filterBuilder.Lte("birthDate", dt),
 						_ => throw new InvalidOperationException($"{pR.Prefix} is unknown")
 					};
 					filter = filter == null ? part : filter & part;
@@ -84,7 +87,7 @@ namespace DbDataAccess.Implementation
 				{
 					var dateOnly = new DateTime(pR.Date.Value.Year, pR.Date.Value.Month, pR.Date.Value.Day);
 					var next = dateOnly.AddDays(1);
-					var part = filterBuilder.Gte(x => x.BirthDate, dateOnly) & filterBuilder.Lt(x => x.BirthDate, next);
+                    var part = filterBuilder.Gte("birthDate", dateOnly) & filterBuilder.Lt("birthDate", next);
 					filter = filter == null ? part : filter & part;
 				}
 			}
@@ -94,17 +97,18 @@ namespace DbDataAccess.Implementation
 				throw new InvalidOperationException("No conditions for search");
 			}
 
-			var cursor = await _collection.FindAsync(filter, cancellationToken: token);
-			var list = await cursor.ToListAsync(token);
-			return list.Select(e => JsonSerializer.Deserialize<Patient.DomainModels.Patient>(e.Json)!).ToList();
+            var cursor = await _collection.FindAsync(filter, cancellationToken: token);
+            var list = await cursor.ToListAsync(token);
+            return list.Select(e => JsonSerializer.Deserialize<Patient.DomainModels.Patient>(e["json"].AsString)!).ToList();
 		}
 
-		public async Task UpdateAsync(Patient.DomainModels.Patient model, CancellationToken token)
+        public async Task UpdateAsync(Patient.DomainModels.Patient model, CancellationToken token)
 		{
-			var update = Builders<MongoPatientEntity>.Update
-				.Set(x => x.Json, JsonSerializer.Serialize(model))
-				.Set(x => x.BirthDate, model.BirthDate);
-			await _collection.UpdateOneAsync(x => x.Id == model.Id.ToString(), update, new UpdateOptions { IsUpsert = false }, token);
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", model.Id.ToString());
+            var update = Builders<BsonDocument>.Update
+                .Set("json", JsonSerializer.Serialize(model))
+                .Set("birthDate", model.BirthDate);
+            await _collection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = false }, token);
 		}
 
 	
