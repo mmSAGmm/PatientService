@@ -9,14 +9,14 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
         public WhenUpdatePatient() 
         {
             model = new DomainModels.Patient();
-            Subject.Update(model, CancellationToken.None);
+            Subject.UpdateAsync(model, CancellationToken.None);
         }
 
         [Fact]
         public void ShouldCallRepo() 
         {
             mocker.GetMock<IPatientRepository>()
-                .Verify(x => x.Update(model, CancellationToken.None));
+                .Verify(x => x.UpdateAsync(model, CancellationToken.None));
         }
     }
 }

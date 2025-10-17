@@ -4,14 +4,14 @@ namespace DbDataAccess.Abstractions
 {
     public interface IPatientRepository
     {
-        public Task<Patient.DomainModels.Patient> Get(Guid Id, CancellationToken token);
+        public Task<Patient.DomainModels.Patient> GetAsync(Guid Id, CancellationToken token);
 
-        public Task<IEnumerable<Patient.DomainModels.Patient>> Search(IEnumerable<ParseResult> parseResults, CancellationToken token);
+        public Task<IEnumerable<Patient.DomainModels.Patient>> SearchAsync(IEnumerable<ParseResult> parseResults, CancellationToken token);
 
-        public Task Add(Patient.DomainModels.Patient model, CancellationToken token);
+        public Task AddAsync(Patient.DomainModels.Patient model, CancellationToken token);
         
-        public Task Update(Patient.DomainModels.Patient model, CancellationToken token);
+        public Task UpdateAsync(Patient.DomainModels.Patient model, CancellationToken token);
 
-        public Task Delete(Guid Id, CancellationToken token);
+        public Task DeleteAsync(Guid Id, CancellationToken token);
     }
 }

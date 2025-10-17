@@ -15,13 +15,13 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
         {
             Invoke(patient);
             mocker.GetMock<IPatientRepository>()
-                .Verify(x => x.Get(patient.Id, CancellationToken.None));
+                .Verify(x => x.GetAsync(patient.Id, CancellationToken.None));
         }
 
 
         private void Invoke(DomainModels.Patient model)
         {
-            Subject.Get(model.Id, CancellationToken.None);
+            Subject.GetAsync(model.Id, CancellationToken.None);
         }
     }
 }

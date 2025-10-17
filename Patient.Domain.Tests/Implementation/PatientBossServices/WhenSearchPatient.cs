@@ -9,14 +9,14 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
     {
         public WhenSearchPatient() 
         {
-            Subject.Search([string.Empty], CancellationToken.None);
+            Subject.SearchAsync([string.Empty], CancellationToken.None);
         }
 
         [Fact]
         public void ShouldCallRepo() 
         {
             mocker.GetMock<IPatientRepository>()
-                .Verify(x => x.Search(It.IsAny<IEnumerable<ParseResult>>(), CancellationToken.None));
+                .Verify(x => x.SearchAsync(It.IsAny<IEnumerable<ParseResult>>(), CancellationToken.None));
         }
 
         [Fact]

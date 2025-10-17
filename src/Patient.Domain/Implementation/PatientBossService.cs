@@ -16,27 +16,27 @@ namespace Patient.Domain.Implementation
             _queryParser = queryParser;
         }
 
-        public Task Add(DomainModels.Patient patient, CancellationToken token)
+        public Task AddAsync(DomainModels.Patient patient, CancellationToken token)
         {
-            return _patientRepository.Add(patient, token);
+            return _patientRepository.AddAsync(patient, token);
         }
 
-        public Task Delete(Guid Id, CancellationToken token)
+        public Task DeleteAsync(Guid Id, CancellationToken token)
         {
-            return _patientRepository.Delete(Id, token);
+            return _patientRepository.DeleteAsync(Id, token);
         }
 
-        public Task<DomainModels.Patient> Get(Guid Id, CancellationToken token)
+        public Task<DomainModels.Patient> GetAsync(Guid Id, CancellationToken token)
         {
-            return _patientRepository.Get(Id, token);
+            return _patientRepository.GetAsync(Id, token);
         }
 
-        public Task Update(DomainModels.Patient patient, CancellationToken token)
+        public Task UpdateAsync(DomainModels.Patient patient, CancellationToken token)
         {
-            return _patientRepository.Update(patient, token);
+            return _patientRepository.UpdateAsync(patient, token);
         }
 
-        public Task<IEnumerable<DomainModels.Patient>> Search(string[] pattern, CancellationToken token)
+        public Task<IEnumerable<DomainModels.Patient>> SearchAsync(string[] pattern, CancellationToken token)
         {
             var results = new List<ParseResult>();
             foreach (var ptn in pattern)
@@ -48,7 +48,7 @@ namespace Patient.Domain.Implementation
                 }
             }
 
-            return _patientRepository.Search(results, token);
+            return _patientRepository.SearchAsync(results, token);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Db.DataAccess.Implementation
             _connectionProvider = connectionProvider;
         }
 
-        public async Task Add(Patient.DomainModels.Patient model, CancellationToken token)
+        public async Task AddAsync(Patient.DomainModels.Patient model, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
 
@@ -34,7 +34,7 @@ namespace Db.DataAccess.Implementation
                 = await connection.ExecuteAsync($"INSERT INTO tbPatients (id, json, birthDate) SELECT @id, @json, @birthDate", param);
         }
 
-        public async Task Delete(Guid Id, CancellationToken token)
+        public async Task DeleteAsync(Guid Id, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
 
@@ -46,7 +46,7 @@ namespace Db.DataAccess.Implementation
             await connection.ExecuteAsync($"DELETE FROM tbPatients WHERE Id = @id", param);
         }
 
-        public async Task<Patient.DomainModels.Patient> Get(Guid Id, CancellationToken token)
+        public async Task<Patient.DomainModels.Patient> GetAsync(Guid Id, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
 
@@ -67,7 +67,7 @@ namespace Db.DataAccess.Implementation
             return null;
         }
 
-        public async Task<IEnumerable<Patient.DomainModels.Patient>> Search(IEnumerable<ParseResult> parseResults, CancellationToken token)
+        public async Task<IEnumerable<Patient.DomainModels.Patient>> SearchAsync(IEnumerable<ParseResult> parseResults, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
 
@@ -156,7 +156,7 @@ namespace Db.DataAccess.Implementation
             return rs;
         }
 
-        public async Task Update(Patient.DomainModels.Patient model, CancellationToken token)
+        public async Task UpdateAsync(Patient.DomainModels.Patient model, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
 

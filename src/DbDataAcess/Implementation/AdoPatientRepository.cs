@@ -20,7 +20,7 @@ namespace DbDataAccess.Implementation
             _connectionProvider = connectionProvider;
         }
 
-        public async Task Add(Patient.DomainModels.Patient model, CancellationToken token)
+        public async Task AddAsync(Patient.DomainModels.Patient model, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
             await connection.OpenAsync(token);
@@ -36,7 +36,7 @@ namespace DbDataAccess.Implementation
             await cmd.ExecuteScalarAsync(token);
         }
 
-        public async Task Delete(Guid Id, CancellationToken token)
+        public async Task DeleteAsync(Guid Id, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
             await connection.OpenAsync(token);
@@ -50,7 +50,7 @@ namespace DbDataAccess.Implementation
             await cmd.ExecuteNonQueryAsync(token);
         }
 
-        public async Task<Patient.DomainModels.Patient> Get(Guid Id, CancellationToken token)
+        public async Task<Patient.DomainModels.Patient> GetAsync(Guid Id, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
             await connection.OpenAsync(token);
@@ -72,7 +72,7 @@ namespace DbDataAccess.Implementation
             return null;
         }
 
-        public async Task<IEnumerable<Patient.DomainModels.Patient>> Search(IEnumerable<ParseResult> parseResults, CancellationToken token)
+        public async Task<IEnumerable<Patient.DomainModels.Patient>> SearchAsync(IEnumerable<ParseResult> parseResults, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
             await connection.OpenAsync(token);
@@ -165,7 +165,7 @@ namespace DbDataAccess.Implementation
             return rs;
         }
 
-        public async Task Update(Patient.DomainModels.Patient model, CancellationToken token)
+        public async Task UpdateAsync(Patient.DomainModels.Patient model, CancellationToken token)
         {
             using var connection = _connectionProvider.GetConnection();
             await connection.OpenAsync(token);

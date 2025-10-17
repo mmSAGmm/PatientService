@@ -22,9 +22,9 @@ namespace PatientService.Controllers
         //todo: add swagger description
         //todo: vliadte pattern
         [HttpGet("search")]
-        public async Task<IActionResult> Query(string[] pattern, CancellationToken token)
+        public async Task<IActionResult> QueryAsync(string[] pattern, CancellationToken token)
         {
-            var result = await _patientBossService.Search(pattern, token);
+            var result = await _patientBossService.SearchAsync(pattern, token);
 
             return Ok(result.Select(x => _mapper.Map<GetPatientResponseModel>(x)));
         }
@@ -32,19 +32,19 @@ namespace PatientService.Controllers
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(GetPatientResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> GetPatient(Guid id, CancellationToken token)
+        public async Task<IActionResult> GetPatientAsync(Guid id, CancellationToken token)
         {
-            var model = await _patientBossService.Get(id, token);
+            var model = await _patientBossService.GetAsync(id, token);
             return model != null ? Ok(_mapper.Map<GetPatientResponseModel>(model)) : NoContent();
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(GetPatientResponseModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> CreatePatient([FromBody] CreatePatientRequestModel requestModel, CancellationToken token)
+        public async Task<IActionResult> CreatePatientAsync([FromBody] CreatePatientRequestModel requestModel, CancellationToken token)
         {
             var patient = _mapper.Map<Patient.DomainModels.Patient>(requestModel);
-            await _patientBossService.Add(patient, token);
+            await _patientBossService.AddAsync(patient, token);
 
             var model = _mapper.Map<GetPatientResponseModel>(patient);
             return Created(patient.Id.ToString(), model);
@@ -54,18 +54,18 @@ namespace PatientService.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> UpdatePatient([FromBody] UpdatePatientRequestModel requestModel, CancellationToken token)
+        public async Task<IActionResult> UpdatePatientAsync([FromBody] UpdatePatientRequestModel requestModel, CancellationToken token)
         {
             var patient = _mapper.Map<Patient.DomainModels.Patient>(requestModel);
-            await _patientBossService.Update(patient, token);
+            await _patientBossService.UpdateAsync(patient, token);
             return Ok();
         }
 
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeletePatient(Guid id, CancellationToken token)
+        public async Task<IActionResult> DeletePatientAsync(Guid id, CancellationToken token)
         {
-            await _patientBossService.Delete(id, token);
+            await _patientBossService.DeleteAsync(id, token);
             return Ok();
         }
     }

@@ -5,14 +5,14 @@ namespace Patient.Domain.Tests.Implementation.PatientBossServices
 {
     public class WhenRemovePatient : BasePatientBossServiceFixture
     {
-        private void Invoke(Guid id) => Subject.Delete(id, CancellationToken.None);
+        private void Invoke(Guid id) => Subject.DeleteAsync(id, CancellationToken.None);
 
         [Theory, AutoData]
         public void ShouldCallRepo(Guid id) 
         {
             Invoke(id);
             mocker.GetMock<IPatientRepository>()
-                .Verify(x => x.Delete(id, CancellationToken.None));
+                .Verify(x => x.DeleteAsync(id, CancellationToken.None));
         }
     }
 }
