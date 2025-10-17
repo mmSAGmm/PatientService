@@ -18,8 +18,8 @@ namespace DbDataAccess
             services.Configure<MongoOption>(configuration.GetSection("Mongo"));
             services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
             services.AddSingleton<IMongoClient>(sp => new MongoClient(sp.GetRequiredService<IOptions<MongoOption>>().Value.ConnectionString));
-            services.AddSingleton<IPatientRepository, MongoPatientRepository>();
-            // services.AddSingleton<IPatientRepository, AdoPatientRepository>();
+            //services.AddSingleton<IPatientRepository, MongoPatientRepository>();
+            services.AddSingleton<IPatientRepository, AdoPatientRepository>();
             //services.AddTransient<IPatientRepository, EfPatientRepository>();
             //services.AddTransient<IPatientRepository, DapperPatientRepository>();
             return services;
