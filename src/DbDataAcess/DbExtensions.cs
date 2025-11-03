@@ -20,6 +20,7 @@ namespace DbDataAccess
             services.AddSingleton<IMongoClient>(sp => new MongoClient(sp.GetRequiredService<IOptions<MongoOption>>().Value.ConnectionString));
             //services.AddSingleton<IPatientRepository, MongoPatientRepository>();
             services.AddSingleton<IPatientRepository, AdoPatientRepository>();
+            services.AddDbContext<Db.DataAccess.EF.DbContex>();
             //services.AddTransient<IPatientRepository, EfPatientRepository>();
             //services.AddTransient<IPatientRepository, DapperPatientRepository>();
             return services;
