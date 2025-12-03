@@ -1,78 +1,233 @@
-## Introduction
+# Patient Service API
 
-This is a simple pipeline example for a .NET Core application, showing just
-how easy it is to get up and running with .NET development using GitLab.
+A RESTful API service for managing patient information built with .NET 8.0. This service provides CRUD operations for patient data with advanced search capabilities, observability features, and containerization support.
 
-# Reference links
+## Features
 
-- [GitLab CI Documentation](https://docs.gitlab.com/ee/ci/)
-- [.NET Hello World tutorial](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial/)
+- **Patient Management**: Full CRUD operations (Create, Read, Update, Delete) for patient records
+- **Advanced Search**: Pattern-based patient search functionality
+- **API Documentation**: Swagger/OpenAPI integration for interactive API exploration
+- **Observability**: OpenTelemetry integration with Prometheus metrics and distributed tracing
+- **Health Checks**: Actuator endpoints for application health and metrics
+- **Validation**: FluentValidation for request validation
+- **Docker Support**: Containerized deployment with Docker and Docker Compose
+- **MySQL Database**: Persistent storage using MySQL
 
-If you're new to .NET you'll want to check out the tutorial, but if you're
-already a seasoned developer considering building your own .NET app with GitLab,
-this should all look very familiar.
+## Technology Stack
 
-## What's contained in this project
+- **.NET 8.0** - Web API framework
+- **MySQL** - Database
+- **AutoMapper** - Object-to-object mapping
+- **FluentValidation** - Request validation
+- **OpenTelemetry** - Observability (tracing, metrics, logging)
+- **Swashbuckle (Swagger)** - API documentation
+- **Steeltoe Management** - Health checks and actuator endpoints
+- **Docker** - Containerization
 
-The root of the repository contains the out of the `dotnet new console` command,
-which generates a new console application that just prints out "Hello, World."
-It's a simple example, but great for demonstrating how easy GitLab CI is to
-use with .NET. Check out the `Program.cs` and `dotnetcore.csproj` files to
-see how these work.
+## Prerequisites
 
-In addition to the .NET Core content, there is a ready-to-go `.gitignore` file
-sourced from the the .NET Core [.gitignore](https://github.com/dotnet/core/blob/master/.gitignore). This
-will help keep your repository clean of build files and other configuration.
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker](https://www.docker.com/get-started) and Docker Compose (optional, for containerized deployment)
+- MySQL (if running without Docker)
 
-Finally, the `.gitlab-ci.yml` contains the configuration needed for GitLab
-to build your code. Let's take a look, section by section.
+## Getting Started
 
-First, we note that we want to use the official Microsoft .NET SDK image
-to build our project.
+### Option 1: Using Docker Compose (Recommended)
 
-```
-image: microsoft/dotnet:latest
-```
+The easiest way to run the application is using Docker Compose, which sets up both the API and MySQL database:
 
-We're defining two stages here: `build`, and `test`. As your project grows
-in complexity you can add more of these.
-
-```
-stages:
-    - build
-    - test
+```bash
+docker-compose up -d
 ```
 
-Next, we define our build job which simply runs the `dotnet build` command and
-identifies the `bin` folder as the output directory. Anything in the `bin` folder
-will be automatically handed off to future stages, and is also downloadable through
-the web UI.
+This will:
+- Build and start the Patient Service API on port `8080`
+- Start a MySQL database on port `3306`
+- Initialize the database schema automatically
+
+The API will be available at: `http://localhost:8080`
+
+### Option 2: Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd test_agsr
+   ```
+
+2. **Set up MySQL database**
+   
+   Make sure MySQL is running and create a database. You can use the initialization script:
+   ```bash
+   mysql -u root -p < my-init-scripts/init.sql
+   ```
+
+3. **Configure the connection string**
+   
+   Update `src/PatientService/appsettings.json` with your MySQL connection string:
+   ```json
+   {
+     "MySql:CONNECTIONSTRING": "Server=localhost;Port=3306;Database=test;Uid=root;Pwd=yourpassword;"
+   }
+   ```
+
+4. **Restore dependencies**
+   ```bash
+   dotnet restore
+   ```
+
+5. **Build the solution**
+   ```bash
+   dotnet build
+   ```
+
+6. **Run the application**
+   ```bash
+   dotnet run --project src/PatientService/PatientService.csproj
+   ```
+
+The API will start on the port configured in `launchSettings.json` (typically `http://localhost:5000` or `https://localhost:5001`).
+
+## Configuration
+
+### Environment Variables
+
+You can override configuration using environment variables:
+
+- `ASPNETCORE_URLS` - The URL where the API listens (default: `http://+:8080` in Docker)
+- `MySql__CONNECTIONSTRING` - MySQL connection string
+
+### Docker Compose Environment
+
+In `docker-compose.yml`, the MySQL connection string is set via environment variable:
+```yaml
+MySql__CONNECTIONSTRING: "Server=db;Port=3306;Database=test;Uid=root;Pwd=example;"
+```
+
+## API Endpoints
+
+### Base URL
+- Local: `http://localhost:8080` (Docker) or `http://localhost:5000` (local)
+- Base path: `/api/v1/patient`
+
+### Endpoints
+
+#### 1. Create Patient
+- **POST** `/api/v1/patient`
+- **Request Body**: Patient information (use, family, given, gender, birthDate, active)
+- **Response**: `201 Created` with created patient data
+
+#### 2. Get Patient by ID
+- **GET** `/api/v1/patient/{id}`
+- **Parameters**: `id` (Guid)
+- **Response**: `200 OK` with patient data or `204 No Content` if not found
+
+#### 3. Search Patients
+- **GET** `/api/v1/patient/search?pattern={pattern}&pattern={pattern}...`
+- **Parameters**: `pattern` (string array) - Search patterns
+- **Response**: `200 OK` with matching patients
+
+#### 4. Update Patient
+- **PUT** `/api/v1/patient`
+- **Request Body**: Updated patient information
+- **Response**: `200 OK` on success
+
+#### 5. Delete Patient
+- **DELETE** `/api/v1/patient/{id}`
+- **Parameters**: `id` (Guid)
+- **Response**: `200 OK` on success
+
+## API Documentation
+
+Once the application is running, you can access:
+
+- **Swagger UI**: `http://localhost:8080/swagger` (or your configured port)
+- **Prometheus Metrics**: `http://localhost:8080/metrics`
+- **Health/Actuator Endpoints**: Configured via Steeltoe Management
+
+## Project Structure
 
 ```
-build:
-    stage: build
-    script:
-        - "dotnet build"
-    artifacts:
-      paths:
-        - bin/
+test_agsr/
+├── src/
+│   ├── PatientService/          # Main API application
+│   ├── Patient.Domain/          # Domain layer with business logic
+│   ├── Patient.DomainModels/    # Domain models
+│   ├── DbDataAcess/             # Data access layer
+│   └── GenerateApp/             # Utility application
+├── Patient.Domain.Tests/        # Unit tests
+├── my-init-scripts/             # Database initialization scripts
+│   └── init.sql
+├── postman/                     # Postman collection for API testing
+│   └── PatientCollection.postman_collection.json
+├── docker-compose.yml           # Docker Compose configuration
+├── Dockerfile                   # Docker image definition
+└── PatientService.sln          # Solution file
 ```
 
-Similar to the build step, we get our test output simply by running `dotnet test`.
+## Testing
 
+### Using Postman
+
+A Postman collection is available in `postman/PatientCollection.postman_collection.json` for testing the API endpoints.
+
+### Running Tests
+
+```bash
+dotnet test
 ```
-test:
-    stage: test
-    script: 
-        - "dotnet test"
+
+## Development
+
+### Building
+
+```bash
+dotnet build PatientService.sln
 ```
 
-This should be enough to get you started. There are many, many powerful options 
-for your `.gitlab-ci.yml`. You can read about them in our documentation 
-[here](https://docs.gitlab.com/ee/ci/yaml/).
+### Running in Development Mode
 
-## Developing with Gitpod
+```bash
+cd src/PatientService
+dotnet watch run
+```
 
-This template repository also has a fully-automated dev setup for [Gitpod](https://docs.gitlab.com/ee/integration/gitpod.html).
+The `watch` command enables hot reload for faster development.
 
-The `.gitpod.yml` ensures that, when you open this repository in Gitpod, you'll get a cloud workspace with .NET Core pre-installed, and your project will automatically be built and start running.
+## Docker
+
+### Building the Docker Image
+
+```bash
+docker build -t patient-service .
+```
+
+### Running with Docker
+
+```bash
+docker run -p 8080:8080 \
+  -e MySql__CONNECTIONSTRING="Server=host.docker.internal;Port=3306;Database=test;Uid=root;Pwd=example;" \
+  patient-service
+```
+
+## Observability
+
+The application includes OpenTelemetry instrumentation for:
+
+- **Tracing**: Distributed tracing for ASP.NET Core and HTTP client calls
+- **Metrics**: Prometheus metrics export endpoint
+- **Logging**: Structured logging support
+
+Access metrics at: `http://localhost:8080/metrics`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on contributing to this project.
+
+## Support
+
+For issues and questions, please open an issue in the repository.
